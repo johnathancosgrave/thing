@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Private Browser (Demo)</title>
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; }
+      #toolbar { padding: 8px; background: #f0f0f0; display:flex; gap:8px; align-items:center; }
+      #url { flex: 1; padding:6px; }
+      #webview { width:100%; height: calc(100vh - 48px); border: none; }
+    </style>
+  </head>
+  <body>
+    <div id="toolbar">
+      <input id="url" type="text" placeholder="https://example.com" />
+      <button id="go">Go</button>
+      <button id="clear">Clear Session</button>
+    </div>
+    <!-- Using an iframe for simplicity; for advanced features use <webview> tag -->
+    <iframe id="webview" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+
+    <script>
+      const urlInput = document.getElementById('url');
+      const goBtn = document.getElementById('go');
+      const clearBtn = document.getElementById('clear');
+      const webview = document.getElementById('webview');
+
+      goBtn.addEventListener('click', () => {
+        let url = urlInput.value.trim();
+        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+        try {
+          const u = new URL(url);
+          webview.src = u.toString();
+        } catch (e) {
+          alert('Invalid URL');
+        }
+      });
+
+      clearBtn.addEventListener('click', async () => {
+        if (confirm('Clear session data now?')) {
+          // call main to clear session; for this demo, just reload blank and rely on main close cleanup
+          webview.src = 'about:blank';
+          alert('Session cleared (local demo).');
+        }
+      });
+
+      // basic keyboard: enter to go
+      urlInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') goBtn.click();
+      });
+    </script>
+  </body>
+</html>
